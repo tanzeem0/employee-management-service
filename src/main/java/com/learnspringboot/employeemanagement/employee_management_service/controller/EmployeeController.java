@@ -2,6 +2,7 @@ package com.learnspringboot.employeemanagement.employee_management_service.contr
 
 import com.learnspringboot.employeemanagement.employee_management_service.dto.EmployeeDto;
 import com.learnspringboot.employeemanagement.employee_management_service.services.EmployeeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -31,7 +32,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeDto> createNewEmployee(@RequestBody EmployeeDto employeeDto)
+    public ResponseEntity<EmployeeDto> createNewEmployee(@RequestBody @Valid EmployeeDto employeeDto)
     {
         return new ResponseEntity<>(employeeService.createNewEmployee(employeeDto), HttpStatus.CREATED);
     }
