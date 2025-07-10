@@ -2,6 +2,7 @@ package com.learnspringboot.employeemanagement.employee_management_service.servi
 
 import com.learnspringboot.employeemanagement.employee_management_service.dto.EmployeeDto;
 import com.learnspringboot.employeemanagement.employee_management_service.entities.EmployeeEntity;
+import com.learnspringboot.employeemanagement.employee_management_service.exceptions.EmployeeNotFoundException;
 import com.learnspringboot.employeemanagement.employee_management_service.repositories.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.el.util.ReflectionUtil;
@@ -42,24 +43,26 @@ public class EmployeeService {
     }
 
     public EmployeeDto updateEmployeeById(EmployeeDto employeeDto, Long employeeId) {
+        isExists(employeeId);
         EmployeeEntity employeeEntity = modelMapper.map(employeeDto,EmployeeEntity.class);
         employeeEntity.setId(employeeId);
         EmployeeEntity savedEmployeeEntity = employeeRepository.save(employeeEntity);
         return modelMapper.map(savedEmployeeEntity, EmployeeDto.class);
     }
-    public boolean isExists(Long employeeId){
-        return employeeRepository.existsById(employeeId);
+    public void isExists(Long employeeId){
+
+        boolean isExists =  employeeRepository.existsById(employeeId);
+        if(!isExists) throw new EmployeeNotFoundException("Employee Not Found Exception: "+employeeId);
+
     }
     public boolean deleteEmployeeById(Long employeeId) {
-        boolean exists = isExists(employeeId);
-        if(!exists) return false;
+        isExists(employeeId);
         employeeRepository.deleteById(employeeId);
         return true;
     }
 
     public EmployeeDto updatePartialEmployeeById(Long employeeId, Map<String, Object> updates) {
-        boolean exists = isExists(employeeId);
-        if(!exists) return null;
+        isExists(employeeId);
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId).get();
         updates.forEach((field,value)->{
             Field updatedField = ReflectionUtils.findRequiredField(employeeEntity.getClass(),field);

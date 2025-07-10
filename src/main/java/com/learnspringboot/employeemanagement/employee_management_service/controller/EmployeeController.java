@@ -1,6 +1,7 @@
 package com.learnspringboot.employeemanagement.employee_management_service.controller;
 
 import com.learnspringboot.employeemanagement.employee_management_service.dto.EmployeeDto;
+import com.learnspringboot.employeemanagement.employee_management_service.exceptions.EmployeeNotFoundException;
 import com.learnspringboot.employeemanagement.employee_management_service.services.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable Long empId){
 
         Optional<EmployeeDto> foundEmployee =  employeeService.getEmployeeById(empId);
-        return foundEmployee.map(employeeDto -> ResponseEntity.ok(employeeDto)).orElse(ResponseEntity.notFound().build());
+        return foundEmployee.map(employeeDto -> ResponseEntity.ok(employeeDto)).orElseThrow(()->new EmployeeNotFoundException("Employee Not Found: "+empId));
     }
 
     @GetMapping

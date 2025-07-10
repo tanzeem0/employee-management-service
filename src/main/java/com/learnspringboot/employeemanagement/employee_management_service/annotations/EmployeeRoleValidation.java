@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = EmployeeRoleValidator.class)
 public @interface EmployeeRoleValidation {
-    String message() default "{The role of the employee should be USER or ADMIN}";
+    String message() default "The role of the employee should be USER or ADMIN";
 
     Class<?>[] groups() default {};
 
