@@ -13,29 +13,34 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmployeeNotFoundException.class)
-    public ResponseEntity<ApiError> handleEmployeeNotFoundException(EmployeeNotFoundException e){
+    public ResponseEntity<ApiResponse<?>> handleEmployeeNotFoundException(EmployeeNotFoundException e){
         ApiError apiError = ApiError.builder()
                                     .message(e.getMessage())
                                     .status(HttpStatus.NOT_FOUND).build();
-        return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+        return buildApiResponseEntity(apiError);
+    }
+
+    private ResponseEntity<ApiResponse<?>> buildApiResponseEntity(ApiError apiError) {
+        return new ResponseEntity<>(new ApiResponse<>(apiError),apiError.getStatus());
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleAllTypesOfException(Exception e){
+    public ResponseEntity<ApiResponse<?>> handleAllTypesOfException(Exception e){
         ApiError apiError = ApiError.builder()
                 .message(e.getMessage())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        return new ResponseEntity<>(apiError,HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildApiResponseEntity(apiError);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleInputValidationError(MethodArgumentNotValidException e){
+    public ResponseEntity<ApiResponse<?>> handleInputValidationError(MethodArgumentNotValidException e){
         List<String> subErrorsList = e.getBindingResult().getAllErrors().stream().map(objectError -> objectError.getDefaultMessage()).toList();
         ApiError apiError = ApiError.builder()
                 .message("Input Validation Error")
                 .status(HttpStatus.BAD_REQUEST)
                 .subErrors(subErrorsList)
                 .build();
-        return new ResponseEntity<>(apiError,HttpStatus.BAD_REQUEST);
+        return buildApiResponseEntity(apiError);
     }
+
 }
